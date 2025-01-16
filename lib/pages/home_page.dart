@@ -44,18 +44,18 @@ class _HomePageState extends State<HomePage> {
         // clear textfield
         taskController.clear();
       });
-    } else {
-      // show a snackbar if textfield is empty
-      final snackBar = SnackBar(
-        content: const Text('Can\'t add an empty task'),
-        action: SnackBarAction(
-            label: 'OK',
-            onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            }),
-        backgroundColor: Colors.blueAccent,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      // } else {
+      //   // show a snackbar if textfield is empty
+      //   final snackBar = SnackBar(
+      //     content: const Text('Can\'t add an empty task'),
+      //     action: SnackBarAction(
+      //         label: 'OK',
+      //         onPressed: () {
+      //           ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      //         }),
+      //     backgroundColor: Colors.blueAccent,
+      //   );
+      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
             title: const Center(child: Text('Add new task')),
             content: SizedBox(
               width: 300,
-              height: 100,
+              //height: 100,
               child: Form(
                 key: _formKey,
                 child: TextFormField(
@@ -113,7 +113,11 @@ class _HomePageState extends State<HomePage> {
               OutlinedButton(
                 onPressed: () {
                   // add new task
-                  addTask();
+                  if (_formKey.currentState!.validate()) {
+                    addTask();
+                    // clear alert dialog from the screen
+                    Navigator.of(context).pop();
+                  }
                 },
                 child: const Text('Add Task'),
               )
