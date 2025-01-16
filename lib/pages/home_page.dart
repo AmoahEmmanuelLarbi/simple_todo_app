@@ -17,6 +17,9 @@ class _HomePageState extends State<HomePage> {
     ['Listen to a podcast', false]
   ];
 
+// create a global form key
+  final _formKey = GlobalKey<FormState>();
+
   TextEditingController taskController = TextEditingController();
 // function to change state of checkbox
   void toggleTaskCompletion(bool value, int index) {
@@ -54,6 +57,69 @@ class _HomePageState extends State<HomePage> {
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+  }
+
+  // a function to show an alert dialog box
+  void _openDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Center(child: Text('Add new task')),
+            content: SizedBox(
+              width: 300,
+              height: 100,
+              child: Form(
+                key: _formKey,
+                child: TextFormField(
+                  controller: taskController,
+                  expands: false,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8)
+                        //borderRadius: BorderRadius.circular(45),
+                        ),
+                    hintText: 'Add a task',
+                    border: const OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Can\'t add an empty task';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ),
+            actions: [
+              // cancel
+              OutlinedButton(
+                onPressed: () {
+                  // clear text enter into textfield
+                  taskController.clear();
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+
+              // add task
+              OutlinedButton(
+                onPressed: () {
+                  // add new task
+                  addTask();
+                },
+                child: const Text('Add Task'),
+              )
+            ],
+          );
+        });
   }
 
   @override
@@ -97,50 +163,52 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(left: 20),
         child: Align(
-          alignment: Alignment.bottomCenter,
-          child: Row(
-            children: [
-              // textfield for input
-              Expanded(
-                  child: Padding(
-                padding: const EdgeInsets.only(left: 16),
-                child: TextField(
-                  controller: taskController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8)
-                        //borderRadius: BorderRadius.circular(45),
-                        ),
-                    hintText: 'Add a task',
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
-              )),
-              const SizedBox(width: 6),
+          alignment: Alignment.bottomRight,
+          child:
+              //Row(
+              //   children: [
+              //     // textfield for input
+              //     Expanded(
+              //         child: Padding(
+              //       padding: const EdgeInsets.only(left: 16),
+              //       child: TextField(
+              //         controller: taskController,
+              //         decoration: InputDecoration(
+              //           filled: true,
+              //           fillColor: Colors.grey[200],
+              //           enabledBorder: OutlineInputBorder(
+              //             borderSide: const BorderSide(color: Colors.grey),
+              //             borderRadius: BorderRadius.circular(8),
+              //           ),
+              //           focusedBorder: OutlineInputBorder(
+              //               borderSide: const BorderSide(color: Colors.grey),
+              //               borderRadius: BorderRadius.circular(8)
+              //               //borderRadius: BorderRadius.circular(45),
+              //               ),
+              //           hintText: 'Add a task',
+              //           border: const OutlineInputBorder(),
+              //         ),
+              //       ),
+              //     )),
+              //     const SizedBox(width: 6),
               FloatingActionButton(
-                onPressed: () {
-                  addTask();
-                },
-                elevation: 10,
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.white,
-                mini: true,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(Icons.add),
-              ),
-            ],
+            onPressed: () {
+              //addTask();
+              _openDialog();
+            },
+            elevation: 10,
+            backgroundColor: Colors.blueAccent,
+            foregroundColor: Colors.white,
+            mini: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.add),
           ),
+          //],
         ),
       ),
+      // ),
     );
   }
 }
