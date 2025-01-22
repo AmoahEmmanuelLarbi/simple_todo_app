@@ -25,13 +25,31 @@ class _HomePageState extends State<HomePage> {
   void toggleTaskCompletion(bool value, int index) {
     // change state of checkbox when clicked
     setState(() {
-      _todoList[index][1] = !_todoList[index][1];
+      setState(() {
+        _todoList[index][1] = !_todoList[index][1];
+      });
     });
 
     // print task if completed
-    if (_todoList[index][1] == true) {
+    if (_todoList[index][1]) {
       // ignore: avoid_print
       print('${_todoList[index][0]} is completed');
+      final snackBar = SnackBar(
+        content: const Text('Task Completed'),
+        action: SnackBarAction(
+            label: 'UNDO',
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              // make task as uncompleted when user click on "UNDO" button
+              setState(() {
+                _todoList[index][1] = !_todoList[index][1];
+              });
+              // ignore: avoid_print
+              print('${_todoList[index][0]} is maked uncompleted');
+            }),
+        backgroundColor: Colors.blue,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
@@ -43,6 +61,17 @@ class _HomePageState extends State<HomePage> {
         _todoList.add([taskController.text, false]);
         // clear textfield
         taskController.clear();
+        // show snackbar
+        final snackBar = SnackBar(
+          content: const Text('New task added'),
+          action: SnackBarAction(
+              label: 'OK',
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              }),
+          backgroundColor: Colors.blue,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       });
       // } else {
       //   // show a snackbar if textfield is empty
@@ -143,59 +172,23 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
       ),
       body: Padding(
-          padding: const EdgeInsets.only(top: 10.0),
-          child: ListView.builder(
-              itemCount: _todoList.length,
-              itemBuilder: (context, index) {
-                return TodoList(
-                    taskName: _todoList[index][0],
-                    taskCompleted: _todoList[index][1],
-                    checkboxOnTap: (value) {
-                      toggleTaskCompletion(value!, index);
-                    });
-              })
-
-          //ListView(
-          //   children: const [
-          //     // TodoList(taskName: 'Read a book'),
-          //     // TodoList(taskName: 'Workout'),
-          //     // TodoList(taskName: 'Code'),
-          //     // TodoList(taskName: 'Listen to a podcast'),
-          //   ],
-          // ),
-          ),
+        padding: const EdgeInsets.only(top: 10.0),
+        child: ListView.builder(
+            itemCount: _todoList.length,
+            itemBuilder: (context, index) {
+              return TodoList(
+                  taskName: _todoList[index][0],
+                  taskCompleted: _todoList[index][1],
+                  checkboxOnTap: (value) {
+                    toggleTaskCompletion(value!, index);
+                  });
+            }),
+      ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(left: 20),
         child: Align(
           alignment: Alignment.bottomRight,
-          child:
-              //Row(
-              //   children: [
-              //     // textfield for input
-              //     Expanded(
-              //         child: Padding(
-              //       padding: const EdgeInsets.only(left: 16),
-              //       child: TextField(
-              //         controller: taskController,
-              //         decoration: InputDecoration(
-              //           filled: true,
-              //           fillColor: Colors.grey[200],
-              //           enabledBorder: OutlineInputBorder(
-              //             borderSide: const BorderSide(color: Colors.grey),
-              //             borderRadius: BorderRadius.circular(8),
-              //           ),
-              //           focusedBorder: OutlineInputBorder(
-              //               borderSide: const BorderSide(color: Colors.grey),
-              //               borderRadius: BorderRadius.circular(8)
-              //               //borderRadius: BorderRadius.circular(45),
-              //               ),
-              //           hintText: 'Add a task',
-              //           border: const OutlineInputBorder(),
-              //         ),
-              //       ),
-              //     )),
-              //     const SizedBox(width: 6),
-              FloatingActionButton(
+          child: FloatingActionButton(
             onPressed: () {
               //addTask();
               _openDialog();
@@ -209,10 +202,8 @@ class _HomePageState extends State<HomePage> {
             ),
             child: const Icon(Icons.add),
           ),
-          //],
         ),
       ),
-      // ),
     );
   }
 }
