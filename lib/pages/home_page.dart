@@ -25,9 +25,7 @@ class _HomePageState extends State<HomePage> {
   void toggleTaskCompletion(bool value, int index) {
     // change state of checkbox when clicked
     setState(() {
-      setState(() {
-        _todoList[index][1] = !_todoList[index][1];
-      });
+      _todoList[index][1] = !_todoList[index][1];
     });
 
     // print task if completed
@@ -73,19 +71,63 @@ class _HomePageState extends State<HomePage> {
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       });
-      // } else {
-      //   // show a snackbar if textfield is empty
-      //   final snackBar = SnackBar(
-      //     content: const Text('Can\'t add an empty task'),
-      //     action: SnackBarAction(
-      //         label: 'OK',
-      //         onPressed: () {
-      //           ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      //         }),
-      //     backgroundColor: Colors.blueAccent,
-      //   );
-      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+  }
+
+  // function to delete a task
+  void deleteTask(int index) {
+    setState(() {
+      _todoList.removeAt(index);
+    });
+  }
+
+  // display dialog to confirm task deletion
+  void _showDialog(int index) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Center(child: Text('Delete Task')),
+            content: const SizedBox(
+              height: 80, // change to fit device screen
+              width: 120, // change to fit device screen
+              child: Center(
+                child: Text(
+                  'Do you want to delete this task?',
+                  style: TextStyle(fontFamily: 'Poppins'),
+                ),
+              ),
+            ),
+            actions: [
+              // cancel button
+              OutlinedButton(
+                  onPressed: () {
+                    // pop alert dialog
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(fontFamily: 'Poppins'),
+                  )),
+
+              // space
+              const SizedBox(width: 4),
+              // delete button
+              OutlinedButton(
+                  onPressed: () {
+                    // delete task
+                    deleteTask(index);
+
+                    // pop alert dialog after deletion
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    'Delete',
+                    style: TextStyle(fontFamily: 'Poppins'),
+                  ))
+            ],
+          );
+        });
   }
 
   // a function to show an alert dialog box
@@ -177,11 +219,15 @@ class _HomePageState extends State<HomePage> {
             itemCount: _todoList.length,
             itemBuilder: (context, index) {
               return TodoList(
-                  taskName: _todoList[index][0],
-                  taskCompleted: _todoList[index][1],
-                  checkboxOnTap: (value) {
-                    toggleTaskCompletion(value!, index);
-                  });
+                taskName: _todoList[index][0],
+                taskCompleted: _todoList[index][1],
+                checkboxOnTap: (value) {
+                  toggleTaskCompletion(value!, index);
+                },
+                deleteTask: () {
+                  _showDialog(index);
+                },
+              );
             }),
       ),
       floatingActionButton: Padding(
